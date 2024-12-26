@@ -15,3 +15,5 @@ spec:
       containers:
         - name: hashgenerator
           image: le36/hashgenerator:latest
+          ports:
+            - containerPort: 3000
