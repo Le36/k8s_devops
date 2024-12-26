@@ -17,10 +17,3 @@ spec:
           image: le36/ping-pong:latest
           ports:
             - containerPort: 3000
-          volumeMounts:
-            - name: shared-volume
-              mountPath: /data
-      volumes:
-        - name: shared-volume
-          persistentVolumeClaim:
-            claimName: ping-claim
