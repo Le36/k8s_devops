@@ -12,8 +12,22 @@ spec:
       labels:
         app: hashgenerator
     spec:
+      volumes:
+        - name: shared-data
+          emptyDir: { }
       containers:
-        - name: hashgenerator
+        - name: writer
           image: le36/hashgenerator:latest
+          command: [ "npm", "run", "writer" ]
+          volumeMounts:
+            - name: shared-data
+              mountPath: /shared
+
+        - name: reader
+          image: le36/hashgenerator:latest
+          command: [ "npm", "run", "reader" ]
+          volumeMounts:
+            - name: shared-data
+              mountPath: /shared
           ports:
             - containerPort: 3000
