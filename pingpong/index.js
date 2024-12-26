@@ -1,12 +1,26 @@
+const fs = require('fs')
 const express = require('express')
 
 const app = express()
+const PING_FILE = '/data/pingcount.txt'
 
-let counter = 0
+function readPingCount() {
+    if (!fs.existsSync(PING_FILE)) {
+        return 0
+    }
+    const contents = fs.readFileSync(PING_FILE, 'utf8')
+    return parseInt(contents, 10) || 0
+}
+
+function writePingCount(count) {
+    fs.writeFileSync(PING_FILE, count.toString(), 'utf8')
+}
 
 app.get('/pingpong', (req, res) => {
-    counter++
-    res.send(`pong ${counter}`)
+    let currentCount = readPingCount()
+    currentCount++
+    writePingCount(currentCount)
+    res.send(`pong ${currentCount}`)
 })
 
 app.listen(3000, () => {

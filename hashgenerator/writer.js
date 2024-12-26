@@ -1,5 +1,5 @@
 const fs = require('fs')
-const path = '/shared/timestamp.txt'
+const path = '/data/timestamp.txt'
 
 function writeTimestamp() {
     const timestamp = new Date().toISOString()

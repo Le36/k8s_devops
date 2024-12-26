@@ -4,26 +4,28 @@ const express = require('express')
 
 const app = express()
 const randomString = uuidv4()
-const path = '/shared/timestamp.txt'
+const TIMESTAMP_FILE = '/data/timestamp.txt'
+const PINGCOUNT_FILE = '/data/pingcount.txt'
+
 
 const hash = () => {
-    let data = 'No timestamp found'
+    let timestamp = 'No timestamp found'
+    let pingCount = 0
 
-    try {
-        if (fs.existsSync(path)) {
-            const timestamp = fs.readFileSync(path, 'utf8')
-            data = `${timestamp}: ${randomString}`
-        }
-    } catch (err) {
-        console.error('Error reading file:', err)
+    if (fs.existsSync(TIMESTAMP_FILE)) {
+        timestamp = fs.readFileSync(TIMESTAMP_FILE, 'utf8').trim()
     }
-    return data
+
+    if (fs.existsSync(PINGCOUNT_FILE)) {
+        pingCount = parseInt(fs.readFileSync(PINGCOUNT_FILE, 'utf8'), 10) || 0
+    }
+
+    return `${timestamp}: ${randomString}\nPing / Pongs: ${pingCount}`
 }
 
 app.get('/status', (req, res) => {
-    let data = hash()
-
-    res.send(data)
+    const output = hash()
+    res.send(output)
 })
 
 app.listen(3000, () => {
@@ -31,5 +33,5 @@ app.listen(3000, () => {
 })
 
 setInterval(() => {
-    console.log(`${hash()}`)
+    console.log(`Reader reading: ${hash()}`)
 }, 5000)

@@ -14,20 +14,21 @@ spec:
     spec:
       volumes:
         - name: shared-data
-          emptyDir: { }
+          persistentVolumeClaim:
+            claimName: ping-claim
       containers:
         - name: writer
           image: le36/hashgenerator:latest
           command: [ "npm", "run", "writer" ]
           volumeMounts:
             - name: shared-data
-              mountPath: /shared
+              mountPath: /data
 
         - name: reader
           image: le36/hashgenerator:latest
           command: [ "npm", "run", "reader" ]
           volumeMounts:
             - name: shared-data
-              mountPath: /shared
+              mountPath: /data
           ports:
             - containerPort: 3000
