@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hashgenerator-dep
+  name: pingpong-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hashgenerator
+      app: pingpong
   template:
     metadata:
       labels:
-        app: hashgenerator
+        app: pingpong
     spec:
       containers:
-        - name: hashgenerator
-          image: le36/hashgenerator:latest
+        - name: pingpong
+          image: le36/ping-pong:latest
           ports:
             - containerPort: 3000
