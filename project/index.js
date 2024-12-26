@@ -49,7 +49,25 @@ app.get('/image', async (req, res) => {
 app.get('/', (req, res) => {
     res.send(`
     <h1>Welcome to the ToDo App!</h1>
-    <img src="/image" alt="Random Image" style="max-width: 50%; height: auto;" />
+    <img src="/image" alt="Random Image" style="max-width: 30%; height: auto;" />
+    <br />
+    <input type="text" id="todoInput" maxlength="140" placeholder="Enter your TODO..." />
+    <button id="addTodo">Create TODO</button>
+    <ul>
+      <li>TODO 1</li>
+      <li>TODO 2</li>
+    </ul>
+    <script>
+      document.getElementById('addTodo').addEventListener('click', () => {
+          const input = document.getElementById('todoInput');
+          if (input.value.length > 0 && input.value.length <= 140) {
+              alert('TODO Added: ' + input.value);
+              input.value = '';
+          } else {
+              alert('TODO must be between 1 and 140 characters.');
+          }
+      });
+    </script>
   `)
 })
 
