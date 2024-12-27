@@ -18,3 +18,17 @@ spec:
           image: le36/ping-pong:latest
           ports:
             - containerPort: 3000
+          env:
+            - name: PGHOST
+              value: "postgres-svc"
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: "pingdb"
+            - name: PGUSER
+              value: "pinguser"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
