@@ -1,7 +1,9 @@
 const express = require('express')
 const {Pool} = require('pg')
 const app = express()
+const morgan = require('morgan')
 app.use(express.json())
+app.use(morgan('combined'))
 
 
 const pool = new Pool({
@@ -36,6 +38,19 @@ app.get('/backend/todos', async (req, res) => {
 app.post('/backend/todos', async (req, res) => {
     try {
         const {text} = req.body
+
+        if (!text || text.trim().length === 0) {
+            console.log('Empty todo text')
+            return res.status(400).send('Todo text is required')
+        }
+
+        if (text.length > 140) {
+            console.log(`Todo text too long: "${text}"`)
+            return res.status(400).send('Todo text cannot exceed 140 characters')
+        }
+
+        console.log(`Creating todo with text: "${text}"`)
+
         const result = await pool.query(
             `INSERT INTO todos (text)
              VALUES ($1) RETURNING *`,
@@ -43,7 +58,7 @@ app.post('/backend/todos', async (req, res) => {
         )
         res.status(201).json(result.rows[0])
     } catch (err) {
-        console.error(err)
+        console.error('Failed to create todo:', err)
         res.status(500).send('Failed to create todo')
     }
 })
