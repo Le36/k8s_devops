@@ -17,6 +17,12 @@ spec:
         - name: shared-data
           persistentVolumeClaim:
             claimName: ping-claim
+        - name: config-volume
+          configMap:
+            name: hashgen-config
+            items:
+              - key: information.txt
+                path: information.txt
       containers:
         - name: writer
           image: le36/hashgenerator:latest
@@ -28,8 +34,17 @@ spec:
         - name: reader
           image: le36/hashgenerator:latest
           command: [ "npm", "run", "reader" ]
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: hashgen-config
+                  key: MESSAGE
           volumeMounts:
             - name: shared-data
               mountPath: /data
+            - name: config-volume
+              mountPath: "/config"
+              readOnly: true
           ports:
             - containerPort: 3000

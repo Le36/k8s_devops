@@ -16,7 +16,20 @@ app.get('/status', async (req, res) => {
         const pingCount = data.count || 0
 
         const currentTimestamp = fs.readFileSync(TIMESTAMP_FILE, 'utf8').trim()
-        const output = `${currentTimestamp}: ${randomString}\nPing / Pongs: ${pingCount}`
+
+        let configFileContent = 'No file found'
+        const configFilePath = '/config/information.txt'
+        if (fs.existsSync(configFilePath)) {
+            configFileContent = fs.readFileSync(configFilePath, 'utf8').trim()
+        }
+
+        const messageEnv = process.env.MESSAGE || 'No env found'
+
+        const output =
+            `file content: ${configFileContent}\n` +
+            `env variable: ${messageEnv}\n` +
+            `${currentTimestamp}: ${randomString}\n` +
+            `Ping / Pongs: ${pingCount}`
         res.send(output)
     } catch (err) {
         console.error('Error calling Ping-pong:', err.message)
