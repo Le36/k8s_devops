@@ -4,7 +4,8 @@ const path = require('path')
 const axios = require('axios')
 
 const app = express()
-const port = process.env.PORT || 3000
+app.use(express.json())
+app.use(express.static(path.join(__dirname, 'build')))
 
 const IMAGE_DIR = '/data'
 const IMAGE_FILENAME = 'picsum.jpg'
@@ -46,30 +47,11 @@ app.get('/image', async (req, res) => {
     }
 })
 
-app.get('/', (req, res) => {
-    res.send(`
-    <h1>Welcome to the ToDo App!</h1>
-    <img src="/image" alt="Random Image" style="max-width: 30%; height: auto;" />
-    <br />
-    <input type="text" id="todoInput" maxlength="140" placeholder="Enter your TODO..." />
-    <button id="addTodo">Create TODO</button>
-    <ul>
-      <li>TODO 1</li>
-      <li>TODO 2</li>
-    </ul>
-    <script>
-      document.getElementById('addTodo').addEventListener('click', () => {
-          const input = document.getElementById('todoInput');
-          if (input.value.length > 0 && input.value.length <= 140) {
-              alert('TODO Added: ' + input.value);
-              input.value = '';
-          } else {
-              alert('TODO must be between 1 and 140 characters.');
-          }
-      });
-    </script>
-  `)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
+
+const port = process.env.PORT || 3000
 
 app.listen(port, () => {
     console.log(`Server started in port ${port}`)
