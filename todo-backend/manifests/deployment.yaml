@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: le36/todo-backend:latest
+          image: le36/todo-backend:0.0.1
           ports:
             - containerPort: 3000
           env:
