@@ -30,6 +30,10 @@ spec:
           volumeMounts:
             - name: shared-data
               mountPath: /data
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
 
         - name: reader
           image: le36/hashgenerator:0.0.1
@@ -48,3 +52,7 @@ spec:
               readOnly: true
           ports:
             - containerPort: 3000
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
