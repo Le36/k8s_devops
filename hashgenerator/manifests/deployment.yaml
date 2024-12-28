@@ -25,14 +25,14 @@ spec:
                 path: information.txt
       containers:
         - name: writer
-          image: le36/hashgenerator:latest
+          image: le36/hashgenerator:0.0.1
           command: [ "npm", "run", "writer" ]
           volumeMounts:
             - name: shared-data
               mountPath: /data
 
         - name: reader
-          image: le36/hashgenerator:latest
+          image: le36/hashgenerator:0.0.1
           command: [ "npm", "run", "reader" ]
           env:
             - name: MESSAGE

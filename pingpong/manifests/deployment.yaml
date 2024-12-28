@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: pingpong
-          image: le36/ping-pong:latest
+          image: le36/ping-pong:0.0.1
           ports:
             - containerPort: 3000
           env:

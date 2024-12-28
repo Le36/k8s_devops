@@ -7,6 +7,9 @@ const app = express()
 const randomString = uuidv4()
 const TIMESTAMP_FILE = '/data/timestamp.txt'
 
+app.get('/', (req, res) => {
+    res.send('OK')
+})
 
 app.get('/status', async (req, res) => {
     try {
@@ -39,4 +42,5 @@ app.get('/status', async (req, res) => {
 
 app.listen(3000, () => {
     console.log('App running on port 3000')
+    console.log('Deployed to GKE')
 })

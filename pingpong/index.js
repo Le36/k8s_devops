@@ -28,6 +28,10 @@ async function initDb() {
     `)
 }
 
+app.get('/', (req, res) => {
+    res.send('OK')
+})
+
 app.get('/pingpong', async (req, res) => {
     try {
         await pool.query('UPDATE ping_counter SET count = count + 1 WHERE id = 1')

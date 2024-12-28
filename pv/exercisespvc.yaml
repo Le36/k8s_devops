@@ -4,9 +4,9 @@ metadata:
   namespace: exercises
   name: ping-claim
 spec:
-  storageClassName: exercises-pv
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 100Mi
