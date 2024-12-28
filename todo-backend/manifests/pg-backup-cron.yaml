@@ -13,6 +13,10 @@ spec:
           containers:
             - name: db-backup
               image: google/cloud-sdk:alpine
+              resources:
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"
               command: ["/bin/sh"]
               args:
                 - "-c"
