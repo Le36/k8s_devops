@@ -23,6 +23,16 @@ const getFileAgeInMilliseconds = filePath => {
     }
 }
 
+app.get('/ready', async (req, res) => {
+    try {
+        await axios.get('http://todo-backend-svc:3000/ready')
+        return res.sendStatus(200)
+    } catch (err) {
+        console.error('todo readiness probe failed:', err.message)
+        return res.sendStatus(503)
+    }
+})
+
 app.get('/image', async (req, res) => {
     try {
         const fileAge = getFileAgeInMilliseconds(IMAGE_PATH)

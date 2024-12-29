@@ -63,6 +63,16 @@ app.post('/backend/todos', async (req, res) => {
     }
 })
 
+app.get('/ready', async (req, res) => {
+    try {
+        await pool.query('SELECT 1')
+        return res.sendStatus(200)
+    } catch (err) {
+        console.error('Readiness check failed:', err)
+        return res.sendStatus(500)
+    }
+})
+
 app.get('/', (req, res) => {
     res.send('OK')
 })
