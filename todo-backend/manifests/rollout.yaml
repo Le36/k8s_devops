@@ -26,10 +26,12 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: le36/todo-backend:0.0.3
+          image: le36/todo-backend:0.0.4
           ports:
             - containerPort: 3000
           env:
+            - name: NATS_URL
+              value: "my-nats.project.svc.cluster.local:4222"
             - name: PGHOST
               value: "postgres-svc"
             - name: PGPORT

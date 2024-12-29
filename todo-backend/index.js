@@ -2,9 +2,31 @@ const express = require('express')
 const {Pool} = require('pg')
 const app = express()
 const morgan = require('morgan')
+const {connect, StringCodec} = require('nats')
 app.use(express.json())
 app.use(morgan('combined'))
 
+const NATS_URL = process.env.NATS_URL
+const sc = StringCodec()
+
+let natsConnection;
+
+(async () => {
+    try {
+        natsConnection = await connect({servers: NATS_URL})
+        console.log(`todo-backend connected to NATS at ${NATS_URL}`)
+    } catch (err) {
+        console.error('Failed to connect to NATS:', err)
+    }
+})()
+
+const publishEvent = eventPayload => {
+    if (!natsConnection) {
+        console.warn('NATS not connected yet; cannot publish event')
+        return
+    }
+    natsConnection.publish('events', sc.encode(JSON.stringify(eventPayload)))
+}
 
 const pool = new Pool({
     host: process.env.PGHOST,
@@ -57,6 +79,7 @@ app.post('/backend/todos', async (req, res) => {
              VALUES ($1) RETURNING *`,
             [text]
         )
+        publishEvent({type: 'created', todo: text})
         res.status(201).json(result.rows[0])
     } catch (err) {
         console.error('Failed to create todo:', err)
@@ -84,6 +107,7 @@ app.put('/backend/todos/:id', async (req, res) => {
             return res.status(404).send('Todo not found')
         }
 
+        publishEvent({type: 'marked', todo: id})
         res.json(result.rows[0])
     } catch (err) {
         console.error('Failed to update todo:', err)
