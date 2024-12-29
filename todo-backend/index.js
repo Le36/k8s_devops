@@ -19,7 +19,8 @@ const initDb = async () => {
     pool.query(`
       CREATE TABLE IF NOT EXISTS todos (
         id SERIAL PRIMARY KEY,
-        text VARCHAR(255) NOT NULL
+        text VARCHAR(255) NOT NULL,
+        done BOOLEAN NOT NULL DEFAULT false
       );
 `).catch(err => console.error('Error creating table:', err))
 }
@@ -60,6 +61,33 @@ app.post('/backend/todos', async (req, res) => {
     } catch (err) {
         console.error('Failed to create todo:', err)
         res.status(500).send('Failed to create todo')
+    }
+})
+
+app.put('/backend/todos/:id', async (req, res) => {
+    try {
+        const {id} = req.params
+        const {done} = req.body
+
+        if (typeof done !== 'boolean') {
+            return res.status(400).send('Invalid done value')
+        }
+
+        const result = await pool.query(
+            `UPDATE todos
+             SET done = $1
+             WHERE id = $2 RETURNING *`,
+            [done, id]
+        )
+
+        if (result.rowCount === 0) {
+            return res.status(404).send('Todo not found')
+        }
+
+        res.json(result.rows[0])
+    } catch (err) {
+        console.error('Failed to update todo:', err)
+        res.status(500).send('Failed to update todo')
     }
 })
 

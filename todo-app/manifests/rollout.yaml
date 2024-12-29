@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: le36/todo-app:0.0.1
+          image: le36/todo-app:0.0.2
           ports:
             - containerPort: 3000
           volumeMounts:

@@ -36,6 +36,19 @@ function App() {
         }
     }
 
+    const handleMarkDone = async (id) => {
+        try {
+            await fetch(`/backend/todos/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({done: true})
+            })
+            await fetchTodos()
+        } catch (err) {
+            console.error('Failed to mark todo as done:', err)
+        }
+    }
+
     return (
         <div style={{margin: '2rem'}}>
             <h1>Todo App</h1>
@@ -60,7 +73,10 @@ function App() {
 
             <ul style={{marginTop: '1rem'}}>
                 {todos.map((todo) => (
-                    <li key={todo.id}>{todo.text}</li>
+                    <li key={todo.id}>
+                        {todo.text} {todo.done ? '(DONE)' : '(NOT DONE)'}
+                        <button onClick={() => handleMarkDone(todo.id)}>Mark Done</button>
+                    </li>
                 ))}
             </ul>
         </div>
