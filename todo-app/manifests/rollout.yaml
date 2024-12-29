@@ -1,18 +1,25 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
+  name: todo-app-rollout
   namespace: project
-  name: todo-app-dep
 spec:
+  revisionHistoryLimit: 2
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
   selector:
     matchLabels:
       app: todo-app
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+        - pause:
+            duration: 10
+        - analysis:
+            templates:
+              - templateName: cpu-usage-check
+        - setWeight: 100
   template:
     metadata:
       labels:

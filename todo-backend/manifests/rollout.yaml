@@ -1,13 +1,24 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
+  name: todo-backend-rollout
   namespace: project
-  name: todo-backend-dep
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: todo-backend
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+        - pause:
+            duration: 10
+        - analysis:
+            templates:
+              - templateName: cpu-usage-check
+        - setWeight: 100
   template:
     metadata:
       labels:
