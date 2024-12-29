@@ -40,6 +40,16 @@ app.get('/status', async (req, res) => {
     }
 })
 
+app.get('/ready', async (req, res) => {
+    try {
+        await axios.get('http://pingpong-svc:3000/ready')
+        return res.sendStatus(200)
+    } catch (err) {
+        console.error('Hashgeneratr readiness probe failed:', err.message)
+        return res.sendStatus(503)
+    }
+})
+
 app.listen(3000, () => {
     console.log('App running on port 3000')
     console.log('Deployed to GKE')

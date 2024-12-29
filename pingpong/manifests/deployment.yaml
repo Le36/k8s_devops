@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: pingpong
-          image: le36/ping-pong:0.0.1
+          image: le36/ping-pong:0.0.2
           ports:
             - containerPort: 3000
           env:
@@ -36,3 +36,10 @@ spec:
             limits:
               cpu: "200m"
               memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1

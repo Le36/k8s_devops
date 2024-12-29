@@ -4,6 +4,7 @@ metadata:
   namespace: exercises
   name: dwk-material-ingress
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:

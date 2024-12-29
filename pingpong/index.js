@@ -52,6 +52,16 @@ app.get('/count', async (req, res) => {
     res.json({count: currentCount})
 })
 
+app.get('/ready', async (req, res) => {
+    try {
+        await pool.query('SELECT 1')
+        return res.sendStatus(200)
+    } catch (err) {
+        console.error('Ping-pong readiness probe failed:', err.message)
+        return res.sendStatus(503)
+    }
+})
+
 app.listen(3000, async () => {
     console.log('App running on port 3000')
     try {
