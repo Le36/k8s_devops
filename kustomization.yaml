@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- pingpong/manifests/deployment.yaml
+- pingpong/manifests/service.yaml
+- pingpong/manifests/psql.yaml
+images:
+- name: le36/ping-pong
+  newName: le36/ping-pong
+  newTag: 0.0.2
