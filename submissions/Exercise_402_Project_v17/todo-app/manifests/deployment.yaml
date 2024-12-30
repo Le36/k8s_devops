@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: project
+  name: todo-app-dep
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: le36/todo-app:0.0.1
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: picsum-cache
+              mountPath: /data
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+            successThreshold: 1
+      volumes:
+        - name: picsum-cache
+          persistentVolumeClaim:
+            claimName: image-claim

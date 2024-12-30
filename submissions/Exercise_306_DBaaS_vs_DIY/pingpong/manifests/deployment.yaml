@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: exercises
+  name: pingpong-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pingpong
+  template:
+    metadata:
+      labels:
+        app: pingpong
+    spec:
+      containers:
+        - name: pingpong
+          image: le36/ping-pong:0.0.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PGHOST
+              value: "postgres-svc"
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: "pingdb"
+            - name: PGUSER
+              value: "pinguser"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD

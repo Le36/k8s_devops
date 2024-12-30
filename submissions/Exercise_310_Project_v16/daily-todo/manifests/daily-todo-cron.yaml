@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-todo-cron
+  namespace: project
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: daily-todo
+              image: le36/daily-todo:latest
+              resources:
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"
+              env:
+                - name: BACKEND_URL
+                  value: "http://todo-backend-svc:3000"

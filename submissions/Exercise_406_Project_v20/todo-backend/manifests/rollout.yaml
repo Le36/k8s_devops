@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: todo-backend-rollout
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+        - pause:
+            duration: 10
+        - analysis:
+            templates:
+              - templateName: cpu-usage-check
+        - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+        - name: todo-backend
+          image: le36/todo-backend:0.0.4
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NATS_URL
+              value: "my-nats.project.svc.cluster.local:4222"
+            - name: PGHOST
+              value: "postgres-svc"
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: "tododb"
+            - name: PGUSER
+              value: "todouser"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+            successThreshold: 1

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: exercises
+  name: postgres-stset
+spec:
+  serviceName: postgres-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresdb
+  template:
+    metadata:
+      labels:
+        app: postgresdb
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: pingdb
+            - name: POSTGRES_USER
+              value: pinguser
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+  volumeClaimTemplates:
+    - metadata:
+        namespace: exercises
+        name: postgres-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: exercises
+  name: postgres-svc
+spec:
+  clusterIP: None
+  ports:
+    - port: 5432
+      name: postgres
+  selector:
+    app: postgresdb

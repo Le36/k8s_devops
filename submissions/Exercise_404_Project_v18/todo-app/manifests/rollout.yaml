@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: todo-app-rollout
+  namespace: project
+spec:
+  revisionHistoryLimit: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  strategy:
+    canary:
+      maxSurge: 0
+      maxUnavailable: 1
+      steps:
+        - pause:
+            duration: 10
+        - analysis:
+            templates:
+              - templateName: cpu-usage-check
+        - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: le36/todo-app:0.0.1
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: picsum-cache
+              mountPath: /data
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+            successThreshold: 1
+      volumes:
+        - name: picsum-cache
+          persistentVolumeClaim:
+            claimName: image-claim

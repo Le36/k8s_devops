@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pg-backup-cron
+  namespace: project
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: db-backup
+              image: google/cloud-sdk:alpine
+              resources:
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"
+              command: ["/bin/sh"]
+              args:
+                - "-c"
+                - |
+                  gcloud auth activate-service-account --key-file=/var/secrets/google/key.json
+                  gcloud config set project $GCLOUD_PROJECT
+                  
+                  apk update && apk add postgresql-client
+                  
+                  FILE="/tmp/db-backup-$(date +%Y%m%d_%H%M%S).sql"
+                  pg_dump -h $PGHOST -U $PGUSER -d $PGDATABASE > "$FILE"
+                  
+                  gcloud storage cp "$FILE" "gs://$GCP_BUCKET"
+                  
+                  echo "Backup completed at $(date)."
+              env:
+                - name: PGHOST
+                  value: "postgres-svc"
+                - name: PGPORT
+                  value: "5432"
+                - name: PGDATABASE
+                  value: "tododb"
+                - name: PGUSER
+                  value: "todouser"
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_PASSWORD
+                - name: GCLOUD_PROJECT
+                  value: "modern-spirit-446017-s3"
+                - name: GCP_BUCKET
+                  value: "project_pg_backup"
+              volumeMounts:
+                - name: gcp-sa-key
+                  mountPath: /var/secrets/google
+                  readOnly: true
+          volumes:
+            - name: gcp-sa-key
+              secret:
+                secretName: gcp-sa-key

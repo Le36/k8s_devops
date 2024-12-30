@@ -1,0 +1,17 @@
+{
+  "name": "hashgenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Le36/k8s_devops.git"
+  },
+  "private": true,
+  "dependencies": {
+    "uuid": "^11.0.3"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "hashgenerator",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "writer": "node writer.js",
+    "reader": "node reader.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Le36/k8s_devops.git"
+  },
+  "private": true,
+  "dependencies": {
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "uuid": "^11.0.3"
+  }
+}

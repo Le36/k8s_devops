@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: exercises
+  name: hashgenerator-dep
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      app: hashgenerator
+  template:
+    metadata:
+      labels:
+        app: hashgenerator
+    spec:
+      volumes:
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: ping-claim
+        - name: config-volume
+          configMap:
+            name: hashgen-config
+            items:
+              - key: information.txt
+                path: information.txt
+      containers:
+        - name: writer
+          image: le36/hashgenerator:0.0.2
+          command: [ "npm", "run", "writer" ]
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+        - name: reader
+          image: le36/hashgenerator:0.0.2
+          command: [ "npm", "run", "reader" ]
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: hashgen-config
+                  key: MESSAGE
+          volumeMounts:
+            - name: shared-data
+              mountPath: /data
+            - name: config-volume
+              mountPath: "/config"
+              readOnly: true
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1

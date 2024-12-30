@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broadcaster-dep
+  namespace: project
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: broadcaster
+  template:
+    metadata:
+      labels:
+        app: broadcaster
+    spec:
+      containers:
+        - name: broadcaster
+          image: le36/broadcaster:0.0.1
+          env:
+            - name: NATS_URL
+              value: "my-nats.project.svc.cluster.local:4222"
+            - name: NATS_SUBJECT
+              value: "events"
+            - name: CHAT_WEBHOOK_URL
+              value: "https://httpbin.org/post"
