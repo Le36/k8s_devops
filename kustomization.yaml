@@ -7,4 +7,4 @@ resources:
 images:
 - name: le36/ping-pong
   newName: le36/ping-pong
-  newTag: 0.0.2
+  newTag: 71ed623f068413ff9a9fc6f88c5ad151563e606d
