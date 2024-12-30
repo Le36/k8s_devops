@@ -39,7 +39,7 @@ app.get('/pingpong', async (req, res) => {
         const result = await pool.query('SELECT count FROM ping_counter WHERE id = 1')
         const currentCount = result.rows[0]?.count ?? 0
 
-        res.send(`pong ${currentCount}`)
+        res.send(`pong! ${currentCount}`)
     } catch (err) {
         console.error('Error updating/fetching ping counter:', err)
         res.status(500).send('Database error')
